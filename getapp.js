@@ -1,0 +1,35 @@
+const express = require('express');
+const app = express();
+const PORT = 3000;
+app.get('/', (req, res) => {
+    res.json({
+        message: "Welcome to our API",
+        status: "Active",
+        timestamp: new Date()
+    });
+});
+app.get('/students', (req, res) => {
+
+    const studentList = [
+        { id: 1, name: "Balu", course: "MERN Stack" },
+        { id: 2, name: "Nishant", course: "Data Science" },
+        { id: 3, name: "John", course: "UI/UX" }
+    ];
+
+    res.json(studentList);
+});
+app.get('/product/:id', (req, res) => {
+
+    const productId = req.params.id;
+
+    res.json({
+        requestedId: productId,
+        category: "Mobiles",
+        inStock: true,
+        companys: ["Samsung", "Apple", "Vivo", "OnePlus"]
+    });
+});
+
+app.listen(PORT, () => {
+    console.log(`JSON Server is running at http://localhost:${PORT}`);
+});
