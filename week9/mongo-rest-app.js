@@ -3,47 +3,31 @@ const mongoose = require('mongoose');
 
 const app = express();
 const PORT = 3000;
-
-// Middleware: Allows the server to understand JSON data sent in the request body
 app.use(express.json());
 
-// --- CONFIGURATION FOR SPA ---
-app.set('view engine', 'ejs'); // Tells Express to use EJS for rendering templates
-app.use(express.json()); // To handle JSON data from AJAX requests
-app.use(express.urlencoded({ extended: true })); // To handle standard HTML form submissions
+app.set('view engine', 'ejs'); 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
-// --- STEP 1 & 2: MongoDB ATLAS Configuration & Connection ---
-// The Connection String is obtained from the "Connect" button in your Atlas Dashboard
 const dbURI = "mongodb+srv://admin:password123@cluster0.mongodb.net/LabDB?retryWrites=true&w=majority";
 
 mongoose.connect(dbURI)
   .then(() => console.log("Connected to MongoDB Atlas successfully!"))
   .catch((err) => console.error("Database connection error:", err));
 
-// --- STEP 3: Create Schema and Model ---
-// The Schema defines what a "Student" object looks like in our database
 const studentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   rollNumber: { type: Number, required: true, unique: true },
   course: String,
   isActive: { type: Boolean, default: true }
 });
-
-// The Model is the tool we use to perform CRUD on the "students" collection
 const Student = mongoose.model('Student', studentSchema);
 
-// --- STEP 4 & 5: CRUD Operations & RESTful Services ---
-
-// 1. HOME ROUTE: Fetches students and renders the EJS page
 app.get('/', async (req, res) => {
-  const students = await Student.find(); // 'render' looks into the 'views' folder for index.ejs and passes the students data
+  const students = await Student.find(); 
   res.render('apphome', { students });
 });
 
-/**
- * CREATE: Add a new student to the database (POST request)
- * Logic: Take data from req.body and save it using Student model
- */
 app.post('/students', async (req, res) => {
   try {
     const newStudent = new Student(req.body);
@@ -54,10 +38,6 @@ app.post('/students', async (req, res) => {
   }
 });
 
-/**
- * READ: Get all students from the database (GET request)
- * Logic: Use .find() to retrieve all documents
- */
 app.get('/students', async (req, res) => {
   try {
     const students = await Student.find();
@@ -67,10 +47,6 @@ app.get('/students', async (req, res) => {
   }
 });
 
-/**
- * UPDATE: Modify a student's data by their ID (PUT request)
- * Logic: Find by ID and update with new data from req.body
- */
 app.put('/students/:id', async (req, res) => {
   try {
     const updatedStudent = await Student.findByIdAndUpdate(
@@ -85,10 +61,6 @@ app.put('/students/:id', async (req, res) => {
   }
 });
 
-/**
- * DELETE: Remove a student by their ID (DELETE request)
- * Logic: Find the unique ID in the URL and remove it from the collection
- */
 app.delete('/students/:id', async (req, res) => {
   try {
     const deletedStudent = await Student.findByIdAndDelete(req.params.id);
@@ -99,7 +71,6 @@ app.delete('/students/:id', async (req, res) => {
   }
 });
 
-// Start the Express Server
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
   console.log("Ready for CRUD operations testing.");
